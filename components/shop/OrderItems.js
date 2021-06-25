@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  Platform,
-  Button,
-} from "react-native";
+import { StyleSheet, Text, View, Button } from "react-native";
 import Colors from "../../constants/Colors";
 import CartItem from "./CartItem";
 
@@ -15,7 +8,7 @@ const OrderItems = (props) => {
   return (
     <View style={styles.orderItems}>
       <View style={styles.summary}>
-        <Text style={styles.totalAmount}>R {props.amount.toFixed(2)}</Text>
+        <Text style={styles.totalAmount}>R {props.amount}</Text>
         <Text style={styles.date}>{props.date}</Text>
       </View>
       <Button

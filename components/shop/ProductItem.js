@@ -30,9 +30,7 @@ const ProductItem = (props) => {
               <Typography bold={true} style={styles.title}>
                 {props.title}
               </Typography>
-              <Typography style={styles.price}>
-                R{props.price.toFixed(2)}
-              </Typography>
+              <Typography style={styles.price}>R{props.price}</Typography>
             </View>
 
             <View style={styles.buttonContainer} color={Colors.Primary}>

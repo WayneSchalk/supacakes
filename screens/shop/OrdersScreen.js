@@ -1,13 +1,43 @@
-import React from "react";
-import { StyleSheet, Text, View, FlatList, Platform } from "react-native";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState, useCallback } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  Platform,
+  ActivityIndicator,
+} from "react-native";
+import { useSelector, useDispatch } from "react-redux";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import CustomHeaderButton from "../../components/common/HeaderButton";
 import OrderItems from "../../components/shop/OrderItems";
+import * as ordersActions from "../../store/actions/ordersActions";
+import Colors from "../../constants/Colors";
 
 const OrdersScreen = (props) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
+
+  const getOrdersHandler = useCallback(async () => {
+    setIsLoading(true);
+    await dispatch(ordersActions.getOrders());
+    setIsLoading(false);
+  }, [dispatch, setIsLoading]);
+
+  useEffect(() => {
+    getOrdersHandler();
+  }, [dispatch, getOrdersHandler]);
+
   const Orders = useSelector((state) => state.orders.orders);
-  console.log(Orders);
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color={Colors.Primary} />
+      </View>
+    );
+  }
+
   return (
     <FlatList
       data={Orders}
