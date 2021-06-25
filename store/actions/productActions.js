@@ -5,7 +5,8 @@ export const CREATE_PRODUCT = "CREATE_PRODUCT";
 export const UPDATE_PRODUCT = "UPDATE_PRODUCT";
 export const SET_PRODUCT = "SET_PRODUCT";
 
-export const fetchProducts = () => async (dispatch) => {
+export const fetchProducts = () => async (dispatch, getState) => {
+  const userId = getState().auth.userId;
   try {
     const response = await fetch(
       "https://supacakes-fc1d7-default-rtdb.europe-west1.firebasedatabase.app/products.json"
@@ -22,7 +23,7 @@ export const fetchProducts = () => async (dispatch) => {
       loadedProducts.push(
         new Product(
           key,
-          "u1",
+          resData[key].ownerId,
           resData[key].title,
           resData[key].imageUrl,
           resData[key].description,
@@ -31,16 +32,22 @@ export const fetchProducts = () => async (dispatch) => {
       );
     }
 
-    dispatch({ type: SET_PRODUCT, products: loadedProducts });
+    dispatch({
+      type: SET_PRODUCT,
+      products: loadedProducts,
+      userProducts: loadedProducts.filter((prod) => prod.ownerId === userId),
+    });
   } catch (err) {
     throw err;
   }
 };
 
-export const deleteProduct = (productId) => async (dispatch) => {
+export const deleteProduct = (productId) => async (dispatch, getState) => {
+  const token = getState().auth.token;
+
   try {
     const response = await fetch(
-      `https://supacakes-fc1d7-default-rtdb.europe-west1.firebasedatabase.app/products/${productId}.json`,
+      `https://supacakes-fc1d7-default-rtdb.europe-west1.firebasedatabase.app/products/${productId}.json?=auth=${token}`,
       {
         method: "DELETE",
       }
@@ -57,15 +64,24 @@ export const deleteProduct = (productId) => async (dispatch) => {
 };
 
 export const createProduct =
-  (title, imageUrl, price, description) => async (dispatch) => {
+  (title, imageUrl, price, description) => async (dispatch, getState) => {
+    const token = getState().auth.token;
+    const userId = getState().auth.userId;
+
     const response = await fetch(
-      "https://supacakes-fc1d7-default-rtdb.europe-west1.firebasedatabase.app/products.json",
+      `https://supacakes-fc1d7-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=${token}`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title, imageUrl, price, description }),
+        body: JSON.stringify({
+          title,
+          imageUrl,
+          price,
+          description,
+          ownerId: userId,
+        }),
       }
     );
     if (!response.ok) {
@@ -81,15 +97,18 @@ export const createProduct =
         imageUrl,
         price,
         description,
+        ownerId: userId,
       },
     });
   };
 
 export const updateProduct =
-  (id, title, imageUrl, description) => async (dispatch) => {
+  (id, title, imageUrl, description) => async (dispatch, getState) => {
+    const token = getState().auth.token;
+
     try {
       const response = await fetch(
-        `https://supacakes-fc1d7-default-rtdb.europe-west1.firebasedatabase.app/products/${id}.json`,
+        `https://supacakes-fc1d7-default-rtdb.europe-west1.firebasedatabase.app/products/${id}.json?auth=${token}`,
         {
           method: "PATCH",
           headers: {

@@ -38,6 +38,14 @@ const OrdersScreen = (props) => {
     );
   }
 
+  if (Orders.length === 0) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>You don't have any orders.</Text>
+      </View>
+    );
+  }
+
   return (
     <FlatList
       data={Orders}

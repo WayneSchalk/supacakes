@@ -1,11 +1,21 @@
 import React from "react";
-import { StyleSheet, Text, Button, FlatList, Alert } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  Button,
+  FlatList,
+  Alert,
+  View,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
 import ProductItem from "../../components/shop/ProductItem";
 import { useSelector, useDispatch } from "react-redux";
 import * as productsActions from "../../store/actions/productActions";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import CustomHeaderButton from "../../components/common/HeaderButton";
 import Colors from "../../constants/Colors";
+import { Ionicons } from "@expo/vector-icons";
 
 const UserProductsScreen = (props) => {
   const dispatch = useDispatch();
@@ -28,6 +38,24 @@ const UserProductsScreen = (props) => {
       },
     ]);
   };
+
+  if (userProducts.length === 0) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>You don't have any products... try adding some? </Text>
+        <TouchableOpacity
+          onPress={() => {
+            props.navigation.navigate("EditProduct");
+          }}>
+          <Ionicons
+            name={Platform.OS === "android" ? "md-create" : "iso-create"}
+            size={40}
+            color={Colors.Secondary}
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <FlatList
